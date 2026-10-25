@@ -1,27 +1,15 @@
-"""Заглушка для тестов: возвращает заранее заданные ответы без обращения к сети."""
+"""Заглушка для тестов: отдаёт заранее заданные ответы, в сеть не ходит."""
 
 import json
 
-from pydantic import BaseModel
-
-from app.llm.base import LLMProvider, LLMRequest, Usage
+from app.llm.base import LLMProvider, Message, T
+from app.llm.json_utils import parse_as
 
 
 class FakeProvider(LLMProvider):
-    name = "fake"
-
-    def __init__(self, replies: list[dict | str] | None = None) -> None:
-        # Ответ-строка отдаётся как есть: так можно проверить невалидный JSON.
+    def __init__(self, replies: list[dict] | None = None) -> None:
         self.replies = list(replies or [])
-        self.requests: list[LLMRequest] = []
 
-    async def _complete_raw(
-        self, request: LLMRequest, schema: type[BaseModel]
-    ) -> tuple[str, Usage]:
-        self.requests.append(request)
-        payload = self.replies.pop(0) if self.replies else {}
-        raw = payload if isinstance(payload, str) else json.dumps(payload, ensure_ascii=False)
-        return raw, Usage()
-
-    async def embed(self, texts: list[str]) -> list[list[float]]:
-        return [[float(len(t)), 0.0, 1.0] for t in texts]
+    async def complete_json(self, system: str, messages: list[Message], schema: type[T]) -> T:
+        reply = self.replies.pop(0) if self.replies else {}
+        return parse_as(json.dumps(reply, ensure_ascii=False), schema)

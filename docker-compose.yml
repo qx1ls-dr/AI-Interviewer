@@ -28,8 +28,8 @@ services:
     build: ./backend
     env_file: .env
     environment:
-      IDENTITY_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-interviewer}:${POSTGRES_PASSWORD:-interviewer}@db:5432/identity
-      ANALYTICS_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-interviewer}:${POSTGRES_PASSWORD:-interviewer}@db:5432/analytics
+      IDENTITY_DATABASE_URL: postgresql://${POSTGRES_USER:-interviewer}:${POSTGRES_PASSWORD:-interviewer}@db:5432/identity
+      ANALYTICS_DATABASE_URL: postgresql://${POSTGRES_USER:-interviewer}:${POSTGRES_PASSWORD:-interviewer}@db:5432/analytics
       REDIS_URL: redis://redis:6379/0
     ports:
       - "127.0.0.1:8000:8000"

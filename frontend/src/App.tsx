@@ -1,24 +1,22 @@
-import { Link, Route, Routes } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import InterviewPage from "./pages/InterviewPage";
-import DashboardPage from "./pages/DashboardPage";
+import { useEffect, useState } from "react";
 
+// Стартовая страница: проверяет, что сервер отвечает.
+// Чат респондента, конструктор опроса и дашборд появятся на этапе «Рабочий проект».
 export default function App() {
+  const [status, setStatus] = useState("проверяем…");
+
+  useEffect(() => {
+    fetch("/api/health")
+      .then((response) => response.json())
+      .then((data) => setStatus(`работает, версия ${data.version}`))
+      .catch(() => setStatus("не отвечает"));
+  }, []);
+
   return (
-    <>
-      <header className="header">
-        <Link to="/">AI-интервьюер</Link>
-        <nav>
-          <Link to="/dashboard">Дашборд (демо)</Link>
-        </nav>
-      </header>
-      <main className="main">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/i/:token" element={<InterviewPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-        </Routes>
-      </main>
-    </>
+    <main className="main">
+      <h1>AI-интервьюер</h1>
+      <p>Платформа динамических опросов студентов.</p>
+      <p className="muted">Сервер: {status}</p>
+    </main>
   );
 }
