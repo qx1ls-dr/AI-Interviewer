@@ -8,14 +8,12 @@ dependencies = [
     "uvicorn[standard]>=0.30",
     "pydantic>=2.8",
     "pydantic-settings>=2.4",
-    "gigachat>=0.2.3",
 ]
 
 [dependency-groups]
 dev = [
     "httpx2>=2.16.0",
     "pytest>=8.3",
-    "pytest-asyncio>=0.24",
     "ruff>=0.6",
 ]
 
@@ -35,4 +33,3 @@ select = ["E", "F", "W", "I", "B", "UP", "N", "SIM"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-asyncio_mode = "auto"

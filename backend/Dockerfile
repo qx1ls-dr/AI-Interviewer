@@ -7,7 +7,6 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY app ./app
-COPY prompts ./prompts
 RUN uv sync --frozen --no-dev
 
 EXPOSE 8000
