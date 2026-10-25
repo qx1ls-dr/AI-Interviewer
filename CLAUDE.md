@@ -28,9 +28,9 @@ docker compose up -d db redis
 
 ## Архитектура
 
-- `backend/app/llm/` — к модели обращаемся только через единый интерфейс `LLMProvider` (будет добавлен на этапе 3.2), модули GigaChat и Claude.
+- `backend/app/llm/` — к модели обращаемся только через единый интерфейс `LLMProvider` (будет добавлен на этапе 3.2), модули GigaChat, Claude и YandexGPT.
 - `backend/app/llm/`, `interview/`, `privacy/`, `analysis/` — пока пустые, в docstring описано, что там будет.
-- Промпты храним отдельно от кода (`backend/prompts/`), версия в имени файла.
+- Промпты будем хранить отдельно от кода в `backend/prompts/` (папка появится на этапе 3.2), версия в имени файла.
 - `frontend/` — React + Vite + TypeScript.
 
 ## Обязательные правила
