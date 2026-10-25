@@ -1,4 +1,5 @@
-import ReactECharts from "echarts-for-react";
+import ReactEChartsCore from "echarts-for-react/lib/core";
+import { echarts } from "../charts";
 
 // Синтетические данные для макета. Реальные числа считает сервер запросами к БД.
 const themes = [
@@ -21,7 +22,7 @@ export default function DashboardPage() {
     <section>
       <h1>Дашборд опроса (демо)</h1>
       <p className="muted">Доля уникальных респондентов по темам, синтетические данные.</p>
-      <ReactECharts option={option} style={{ height: 280 }} />
+      <ReactEChartsCore echarts={echarts} option={option} style={{ height: 280 }} />
     </section>
   );
 }

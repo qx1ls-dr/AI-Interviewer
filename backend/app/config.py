@@ -5,8 +5,9 @@
 
 from enum import StrEnum
 from functools import lru_cache
+from typing import Self
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -53,7 +54,11 @@ class Settings(BaseSettings):
 
     # Провайдер по умолчанию и переопределения по задачам.
     llm_default_provider: ProviderName = ProviderName.CLAUDE
-    llm_task_providers: dict[LLMTask, ProviderName] = Field(default_factory=dict)
+    # Обезличивание по умолчанию на российской модели: на этот шаг приходит
+    # текст, в котором ПДн ещё могут остаться, поэтому в Claude его отправлять нельзя.
+    llm_task_providers: dict[LLMTask, ProviderName] = Field(
+        default_factory=lambda: {LLMTask.PII: ProviderName.GIGACHAT}
+    )
 
     anthropic_api_key: SecretStr | None = None
     claude_model: str = "claude-sonnet-5-5"
@@ -73,6 +78,30 @@ class Settings(BaseSettings):
 
     # Порог анонимности k по умолчанию (п. 4.1.1 ТЗ).
     default_k_threshold: int = 5
+
+    @field_validator(
+        "anthropic_api_key",
+        "gigachat_credentials",
+        "yandex_api_key",
+        "yandex_folder_id",
+        mode="before",
+    )
+    @classmethod
+    def _empty_to_none(cls, value: object) -> object:
+        # Пустая строка из .env («ANTHROPIC_API_KEY=») означает «не задано».
+        return None if value == "" else value
+
+    @model_validator(mode="after")
+    def _check_safety(self) -> Self:
+        if self.app_env == "production" and self.dev_mode:
+            raise ValueError("DEV_MODE=true недопустим при APP_ENV=production (п. 4.5.3 ТЗ)")
+        if self.provider_for(LLMTask.PII) == ProviderName.CLAUDE:
+            raise ValueError(
+                "Задача pii не может выполняться в Claude: на этот шаг приходит текст, "
+                "в котором ещё могут быть ПДн (п. 4.8.1 ТЗ). Укажите в LLM_TASK_PROVIDERS "
+                'другой модуль, например {"pii": "gigachat"}.'
+            )
+        return self
 
     def provider_for(self, task: LLMTask) -> ProviderName:
         return self.llm_task_providers.get(task, self.llm_default_provider)

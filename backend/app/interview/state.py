@@ -39,6 +39,8 @@ class InterviewState(BaseModel):
     status: SessionStatus = SessionStatus.CONSENT
 
     def can_probe(self, plan: InterviewPlan) -> bool:
+        if self.current_topic_index >= len(plan.topics):
+            return False
         topic = plan.topics[self.current_topic_index]
         return self.probes_used < topic.max_probes
 

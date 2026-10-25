@@ -6,12 +6,15 @@
 
 import json
 import re
+from typing import TypeVar
 
 from pydantic import BaseModel, ValidationError
 
-from app.llm.base import LLMSchemaError, T
+from app.llm.errors import LLMSchemaError
 
-_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL)
+T = TypeVar("T", bound=BaseModel)
+
+_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)```", re.DOTALL | re.IGNORECASE)
 
 
 def extract_json(text: str) -> str:

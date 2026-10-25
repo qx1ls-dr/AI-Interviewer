@@ -8,7 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-interviewer}
       POSTGRES_DB: postgres
     ports:
-      - "5432:5432"
+      # Порты открыты только на этой машине: в БД identity лежат ПДн.
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       # Создаёт две раздельные БД: identity и analytics (п. 4.8.1 ТЗ).
@@ -21,7 +22,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
 
   backend:
     build: ./backend
@@ -31,7 +32,7 @@ services:
       ANALYTICS_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-interviewer}:${POSTGRES_PASSWORD:-interviewer}@db:5432/analytics
       REDIS_URL: redis://redis:6379/0
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       db:
         condition: service_healthy
