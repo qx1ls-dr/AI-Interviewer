@@ -1,0 +1,42 @@
+# Локальное окружение: PostgreSQL с pgvector, Redis и серверная часть.
+# Фронтенд в разработке запускается отдельно: cd frontend && npm run dev
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-interviewer}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-interviewer}
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Создаёт две раздельные БД: identity и analytics (п. 4.8.1 ТЗ).
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-interviewer}"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      IDENTITY_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-interviewer}:${POSTGRES_PASSWORD:-interviewer}@db:5432/identity
+      ANALYTICS_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-interviewer}:${POSTGRES_PASSWORD:-interviewer}@db:5432/analytics
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  pgdata:
