@@ -1,0 +1,47 @@
+# Секреты и локальные настройки
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Node / фронтенд
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+npm-debug.log*
+
+# Данные: реальные ответы студентов и выгрузки никогда не коммитим
+data/
+exports/
+*.sqlite3
+*.dump
+backups/
+
+# Модели и кэши эмбеддингов
+models/
+.cache/
+
+# IDE и ОС
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# Локальные настройки Claude Code
+.claude/settings.local.json
