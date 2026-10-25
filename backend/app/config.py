@@ -18,9 +18,19 @@ class Settings(BaseSettings):
     analytics_database_url: str = "postgresql://interviewer:interviewer@localhost:5432/analytics"
     redis_url: str = "redis://localhost:6379/0"
 
-    # Какую модель использовать: "gigachat" или "fake" (заглушка для тестов).
+    # Какую модель использовать: "gigachat", "claude_code" (подписка Claude,
+    # только разработка) или "fake" (заглушка для тестов).
     llm_provider: str = "gigachat"
+
     gigachat_credentials: str = ""
+    gigachat_scope: str = "GIGACHAT_API_PERS"
+    gigachat_model: str = "GigaChat"
+    # GigaChat использует сертификат Минцифры. Если он не установлен в системе,
+    # на время разработки можно поставить false, в эксплуатации — только true.
+    gigachat_verify_ssl: bool = True
+
+    # Модель в Claude Code, например "sonnet" или "opus". Пусто — по умолчанию.
+    claude_code_model: str = ""
 
     # Порог анонимности k по умолчанию (п. 4.1.1 ТЗ).
     default_k_threshold: int = 5
